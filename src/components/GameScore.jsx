@@ -4,5 +4,5 @@ export default function GameScore() {
          <span>Score:</span>
          <span>Best Score:</span>
       </>
-   )
+   );
 }
