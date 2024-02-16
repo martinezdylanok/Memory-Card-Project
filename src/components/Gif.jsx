@@ -1,24 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import "../styles/Gifs.css";
-import fetchGif from "../modules/fetchGif";
+import "../styles/Gif.css";
 
-export default function Gif({ searchTerm }) {
-   const [gifType, setGifType] = useState([]);
-
-   useEffect(() => {
-      fetchGif(searchTerm)
-         .then((gifData) => {
-            setGifType(gifData);
-         })
-         .catch((error) => {
-            console.error("Error fetching GIF:", error);
-         });
-   }, [searchTerm]);
-
-   return <div className="gif">{gifType.length > 0 && <img src={gifType[0].images.original.url} alt="" />}</div>;
+export default function Gif({ url, isVisible, changeVisibility }) {
+   return (
+      <div role="button" aria-label="Gif" tabIndex="0" className={isVisible ? "gif visible" : "gif"} onClick={changeVisibility} onKeyDown={changeVisibility}>
+         <img src={url} alt="" />
+      </div>
+   );
 }
 
 Gif.propTypes = {
-   searchTerm: PropTypes.string.isRequired,
+   url: PropTypes.string.isRequired,
+   isVisible: PropTypes.bool.isRequired,
+   changeVisibility: PropTypes.func.isRequired,
 };
