@@ -9,6 +9,7 @@ import shuffleArray from "../modules/shuffleArray";
 export default function GameBoard() {
    const [gifType, setGifType] = useState([]);
    const [activeGifs, setActiveGifs] = useState([]);
+   const [matchedGifs, setMatchedGifs] = useState([]);
 
    useEffect(() => {
       const wordsArray = generateArray();
@@ -29,12 +30,19 @@ export default function GameBoard() {
          });
    }, []);
 
-   const handleGifClick = (gifId) => {
-      if (!activeGifs.includes(gifId)) {
-         if (activeGifs.length < 2) {
-            setActiveGifs([...activeGifs, gifId]);
-         } else {
-            setActiveGifs([]);
+   const handleGifClick = (newGif) => {
+      if (!activeGifs.includes(newGif)) {
+         if (!matchedGifs.includes(newGif)) {
+            if (activeGifs.length < 2) {
+               setActiveGifs([...activeGifs, newGif]);
+            } else {
+               const [firstGif, secondGif] = activeGifs;
+               const pairOfGifSMatchId = firstGif.split("_")[0] === secondGif.split("_")[0];
+               if (pairOfGifSMatchId) {
+                  setMatchedGifs([...matchedGifs, firstGif, secondGif]);
+               }
+               setActiveGifs([]);
+            }
          }
       }
    };
@@ -45,7 +53,7 @@ export default function GameBoard() {
          <ul className="gif-container">
             {gifType.map((gif) => (
                <li key={gif.id}>
-                  <Gif url={gif.images.original.url} isVisible={activeGifs.includes(gif.id)} changeVisibility={() => handleGifClick(gif.id)} />
+                  <Gif url={gif.images.original.url} isVisible={activeGifs.includes(gif.id) || matchedGifs.includes(gif.id)} changeVisibility={() => handleGifClick(gif.id)} />
                </li>
             ))}
          </ul>
