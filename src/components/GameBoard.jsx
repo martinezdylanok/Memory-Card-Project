@@ -7,9 +7,12 @@ import fetchGif from "../modules/fetchGif";
 import shuffleArray from "../modules/shuffleArray";
 
 export default function GameBoard() {
+   const storedScore = JSON.parse(localStorage.getItem("score"));
    const [gifType, setGifType] = useState([]);
    const [activeGifs, setActiveGifs] = useState([]);
    const [matchedGifs, setMatchedGifs] = useState([]);
+   const [highestScore, setHighestScore] = useState(storedScore);
+   const [gameScore, setGameScore] = useState(0);
 
    useEffect(() => {
       const wordsArray = generateArray();
@@ -30,6 +33,13 @@ export default function GameBoard() {
          });
    }, []);
 
+   useEffect(() => {
+      if (gameScore > highestScore) {
+         setHighestScore(gameScore);
+         localStorage.setItem("score", JSON.stringify(gameScore));
+      }
+   }, [gameScore]);
+
    const handleGifClick = (newGif) => {
       if (!activeGifs.includes(newGif)) {
          if (!matchedGifs.includes(newGif)) {
@@ -40,6 +50,7 @@ export default function GameBoard() {
                const pairOfGifSMatchId = firstGif.split("_")[0] === secondGif.split("_")[0];
                if (pairOfGifSMatchId) {
                   setMatchedGifs([...matchedGifs, firstGif, secondGif]);
+                  setGameScore((previousScore) => previousScore + 1);
                }
                setActiveGifs([]);
             }
@@ -49,7 +60,7 @@ export default function GameBoard() {
 
    return (
       <div className="game-board">
-         <GameScore />
+         <GameScore currentScore={gameScore} highestScore={highestScore} />
          <ul className="gif-container">
             {gifType.map((gif) => (
                <li key={gif.id}>
