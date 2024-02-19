@@ -34,11 +34,25 @@ export default function GameBoard() {
    }, []);
 
    useEffect(() => {
-      if (gameScore > highestScore) {
-         setHighestScore(gameScore);
-         localStorage.setItem("score", JSON.stringify(gameScore));
+      if (gameScore === 8) {
+         localStorage.setItem("score", JSON.stringify(highestScore + 8));
       }
    }, [gameScore]);
+
+   useEffect(() => {
+      setHighestScore(storedScore);
+   }, [highestScore]);
+
+   useEffect(() => {
+      if (activeGifs.length === 2) {
+         const [firstGif, secondGif] = activeGifs;
+         const pairOfGifsMatchId = firstGif.split("_")[0] === secondGif.split("_")[0];
+         if (pairOfGifsMatchId) {
+            setMatchedGifs((prevMatchedGifs) => [...prevMatchedGifs, firstGif, secondGif]);
+            setGameScore((previousGameScore) => previousGameScore + 1);
+         }
+      }
+   }, [activeGifs]);
 
    const handleGifClick = (newGif) => {
       if (!activeGifs.includes(newGif)) {
@@ -46,16 +60,14 @@ export default function GameBoard() {
             if (activeGifs.length < 2) {
                setActiveGifs([...activeGifs, newGif]);
             } else {
-               const [firstGif, secondGif] = activeGifs;
-               const pairOfGifSMatchId = firstGif.split("_")[0] === secondGif.split("_")[0];
-               if (pairOfGifSMatchId) {
-                  setMatchedGifs([...matchedGifs, firstGif, secondGif]);
-                  setGameScore((previousScore) => previousScore + 1);
-               }
                setActiveGifs([]);
             }
          }
       }
+   };
+
+   const restartGame = () => {
+      window.location.reload();
    };
 
    return (
@@ -68,6 +80,11 @@ export default function GameBoard() {
                </li>
             ))}
          </ul>
+         {gameScore === 8 && (
+            <button type="button" className="restart-button" onClick={restartGame}>
+               Play Again
+            </button>
+         )}
       </div>
    );
 }
